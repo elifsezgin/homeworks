@@ -83,10 +83,10 @@ end
 
 class Playwright
 
-  attr_reader
+  attr_accessor :name, :birth_year
 
   def self.all
-    data = PlayDBConnection.instance.execute("SELECT * FROM plays")
+    data = PlayDBConnection.instance.execute("SELECT * FROM playwrights")
     data.map { |datum| Playwright.new(datum) }
   end
 
@@ -104,6 +104,7 @@ class Playwright
   end
 
   def initialize(options)
+    @id = options['id']
     @name = options['name']
     @birth_year = options['birth_year']
   end
@@ -112,7 +113,7 @@ class Playwright
     raise "#{self} already in database" if @id
     PlayDBConnection.instance.execute(<<-SQL, @name, @birth_year)
       INSERT INTO
-        playwrights (@name, @birth_year)
+        playwrights (name, birth_year)
       VALUES
         (?, ?)
     SQL
@@ -143,7 +144,7 @@ class Playwright
         playwright_id = ?
     SQL
 
-    plays.map {|play| Play.new(play)}  
+    plays.map { |play| Play.new(play) }
   end
 
 end
